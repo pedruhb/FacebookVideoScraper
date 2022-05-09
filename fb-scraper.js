@@ -1,6 +1,6 @@
 import { URL } from 'url';
 import puppeteer from "puppeteer";
-const browser = await puppeteer.launch({ headless: false });
+const browser = await puppeteer.launch();
 
 export default class Scraper {
 
