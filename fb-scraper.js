@@ -29,7 +29,7 @@ export default class Scraper {
 async function Facebook(url) {
 
     const page = await browser.newPage();
-    await page.emulate(iPhone);
+    //await page.emulate(iPhone);
     await page.goto("http://m.facebook.com" + url.href.substring(url.origin.length, url.href.length));
 
     const exists = await page.$eval('#m_story_permalink_view > div > div > div > div > section > div > div > i', () => true).catch(() => false)
