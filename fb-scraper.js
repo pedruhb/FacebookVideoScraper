@@ -1,12 +1,10 @@
 import { URL } from 'url';
 import puppeteer from "puppeteer";
-const browser = await puppeteer.launch();
+const iPhone = puppeteer.devices['iPhone 6'];
+const browser = await puppeteer.launch({ headless: false });
 
 export default class Scraper {
-
-    constructor() {
-    }
-
+    
     async facebook(url) {
 
         const link = new URL(url);
@@ -31,7 +29,7 @@ export default class Scraper {
 async function Facebook(url) {
 
     const page = await browser.newPage();
-
+    await page.emulate(iPhone);
     await page.goto("http://m.facebook.com" + url.href.substring(url.origin.length, url.href.length));
 
     const exists = await page.$eval('#m_story_permalink_view > div > div > div > div > section > div > div > i', () => true).catch(() => false)
@@ -82,11 +80,19 @@ async function Facebook(url) {
 async function FacebookWatch(url) {
 
     const page = await browser.newPage();
+    await page.emulate(iPhone);
+    await page.goto(url);
 
-    await page.goto("http://m.facebook.com" + url.href.substring(url.origin.length, url.href.length));
+    const checkSelector = await page.evaluate(() => {
+        try {
+            return document.querySelector(".widePic > div > i");
+        } catch (err) {
+            console.log(err);
+            return false
+        }
+    })
 
-    const exists = await page.$eval('.widePic > div > i', () => true).catch(() => false)
-    if (!exists) {
+    if (!checkSelector) {
         await page.close();
         return {
             "success": false,
@@ -98,7 +104,6 @@ async function FacebookWatch(url) {
         .catch((error) => {
             console.log(error);
         });
-
 
     await page.waitForSelector('.widePic > div> video', { visible: true })
 
